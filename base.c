@@ -12,7 +12,7 @@ struct PERSON // PERSON 구조체. 4개의 문자열, 3개의 정수.
     PERSON * next;
 };
 
-PERSON people_array[30] = {0}; // PERSON 구조체 배열.
+PERSON people_array[50] = {0}; // PERSON 구조체 배열.
 PERSON * people_linked_list = NULL; // PERSON 구조체 linked list. 
 FILE * file; // 파일 디스크립터.
 void q1(), q2(), q3(), q4(), q5(), q6(); // 1법부터 6번까지의 문제를 해결할 코드를 다음과 같은 함수의 형태로 적으면 됩니다.
@@ -46,12 +46,47 @@ int main(void)
 // 0을 반환할때: 인덱스 번째의 구조체를 정상적으로 제거함.
 // 1을 반환할때: 인덱스보다 리스트의 크기가 작아서 마지막 번째의 구조체를 제거함.
 //
+//////// ll_get_node_at(인덱스) : people_linked_list의 인덱스 번째에 있는 구조체의 주소 포인터를 반환함.
+// -1을 반환할때: 인덱스가 리스트의 크기 보다 큼.
+// 0을 반환할때: 성공적으로 값을 반환함. 
+//
+//////// ll_print_nodes(시작 인덱스, 마지막 인덱스) : people_linked_list에서 시작 인덱스부터 마지막 인덱스 까지의 노드들의 정보를 출력함. 
+// 디버깅 용으로 제작된 함수. 마지막 인덱스의 값이 리스트의 크기보다 크면, 리스트의 마지막 구조체를 출력한 후 자동으로 함수를 종료함.
+//
 #define POSITION_LAST 99999 
 #define POSITION_FIRST 0
 
 PERSON * ll_create_node()
 {
     return (PERSON *) malloc(sizeof(PERSON));
+}
+
+PERSON * ll_get_node_at(int position)
+{
+    int out_of_range = 0;
+    PERSON * ptr = people_linked_list;
+
+    for (int i=0; i<position && !out_of_range; i++)
+    {
+        if (ptr != NULL) ptr = ptr->next;
+        else out_of_range = 1;
+    }
+
+    return out_of_range ? NULL : ptr;
+}
+
+void ll_print_nodes(int from, int to)
+{
+    printf("[리스트에서의 인덱스, 번호, 날짜, 지불여부, 이름, 나이, 출신대학, 직업]\n");
+    for (int i=from; i<=to; i++)
+    {
+        PERSON * p = ll_get_node_at(i);
+        if (p == NULL) return;
+
+        printf("#%2d: %3d %11s %3d %30s %2d %30s %20s\n", 
+            i, p->index, p->date, p->paid, p->name,
+            p->age, p->univ, p->job);
+    }
 }
 
 int ll_add_node_at(PERSON p, int position)
@@ -123,6 +158,7 @@ int ll_remove_node_at(int position)
     return position != index_count;
 }
 
+
 /////////////////////
 /////////////////////
 /////////////////////
@@ -179,8 +215,6 @@ void q1()
     for (int i=0; *people_array[i].name; i++) 
         ll_add_node_at(people_array[i], POSITION_LAST);
 
-    PERSON aaa = {"1", "3", "5", "7", 9,11,13};
-    ll_add_node_at(aaa, 0);
     //TODO: 성이 '최' 이거나 가천대 소속일 경우 터미널에 정보 출력하기.
 }
 
