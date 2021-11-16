@@ -88,7 +88,7 @@ void ll_print_nodes(int from, int to)
     }
 }
 
-int ll_insert_node_at(PERSON p, int position)
+int ll_add_node_at(PERSON p, int position)
 {
     PERSON * ptr = people_linked_list;
     PERSON * newnode = ll_create_node();
@@ -104,9 +104,8 @@ int ll_insert_node_at(PERSON p, int position)
     {
         if (position != 0)
         {
-            while (index_count != position-1)
+            while (ptr->next != NULL && index_count != position-1)
             {
-                if (ptr = NULL) return -1;
                 ptr = ptr->next;
                 index_count++;
             }
@@ -123,17 +122,6 @@ int ll_insert_node_at(PERSON p, int position)
 
     return position != index_count;
 
-}
-
-int ll_add_node(PERSON p)
-{
-    PERSON * ptr = people_linked_list;
-    PERSON * newnode = ll_create_node();
-    *newnode = p;
-    newnode->next = NULL;
-    
-    while (ptr != NULL) ptr = ptr->next;
-    ptr = newnode;
 }
 
 int ll_remove_node_at(int position)
@@ -227,7 +215,7 @@ void q1()
         ll_add_node_at(people_array[i], POSITION_LAST);
 
     ll_print_nodes(0,999);
-    ll_remove_node_at(0);
+    ll_remove_node_at(999);
     ll_print_nodes(0,999);
     //TODO: 성이 '최' 이거나 가천대 소속일 경우 터미널에 정보 출력하기.
 }
