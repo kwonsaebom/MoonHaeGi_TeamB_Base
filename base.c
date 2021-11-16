@@ -88,7 +88,7 @@ void ll_print_nodes(int from, int to)
     }
 }
 
-int ll_add_node_at(PERSON p, int position)
+int ll_insert_node_at(PERSON p, int position)
 {
     PERSON * ptr = people_linked_list;
     PERSON * newnode = ll_create_node();
@@ -104,8 +104,9 @@ int ll_add_node_at(PERSON p, int position)
     {
         if (position != 0)
         {
-            while (ptr->next != NULL && index_count != position-1)
+            while (index_count != position-1)
             {
+                if (ptr = NULL) return -1;
                 ptr = ptr->next;
                 index_count++;
             }
@@ -122,6 +123,17 @@ int ll_add_node_at(PERSON p, int position)
 
     return position != index_count;
 
+}
+
+int ll_add_node(PERSON p)
+{
+    PERSON * ptr = people_linked_list;
+    PERSON * newnode = ll_create_node();
+    *newnode = p;
+    newnode->next = NULL;
+    
+    while (ptr != NULL) ptr = ptr->next;
+    ptr = newnode;
 }
 
 int ll_remove_node_at(int position)
