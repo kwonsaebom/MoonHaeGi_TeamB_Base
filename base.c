@@ -91,11 +91,13 @@ void ll_print_nodes(int from, int to)
 int ll_add_node_at(PERSON p, int position)
 {
     PERSON * ptr = people_linked_list;
+    PERSON * newnode = ll_create_node();
     int index_count = 0;
+    *newnode = p;
 
     if (ptr == NULL)
     {
-        people_linked_list = ll_create_node();
+        people_linked_list = newnode;
         *people_linked_list = p;
     }
     else
@@ -108,17 +110,13 @@ int ll_add_node_at(PERSON p, int position)
                 index_count++;
             }
 
-            PERSON * prev_next = ptr->next;
-            ptr->next = ll_create_node(); 
-            *(ptr->next) = p;
-            ptr->next->next = prev_next;
+            newnode->next = ptr->next;
+            ptr->next = newnode;
         }
         else
         {
-            PERSON * prev = ptr;
-            people_linked_list = ll_create_node();
-            *people_linked_list = p;
-            people_linked_list->next = prev; 
+            newnode->next = people_linked_list;
+            people_linked_list = newnode;
         }
     }
 
@@ -132,25 +130,27 @@ int ll_remove_node_at(int position)
     int index_count = 0;
 
     if (ptr == NULL) return -1;
+    else if (ptr->next == NULL) people_linked_list = NULL;
     else
     {
         if (position != 0)
         {
-            while (ptr->next != NULL && index_count != position-1)
+            while (ptr->next->next != NULL && index_count != position-1)
             {
                 ptr = ptr->next;
                 index_count++;
             }
 
-            PERSON * next = ptr->next->next;
-            free(ptr->next); 
-            ptr->next = next; 
+            PERSON * next = ptr->next;
+            ptr->next = ptr->next->next;
+            free(next); 
+
         }
         else
         {
             PERSON * next = ptr->next;
             free(ptr);
-            ptr = next;
+            people_linked_list = next;
         }
     }
 
@@ -214,6 +214,9 @@ void q1()
     for (int i=0; *people_array[i].name; i++) 
         ll_add_node_at(people_array[i], POSITION_LAST);
 
+    ll_print_nodes(0,999);
+    ll_remove_node_at(0);
+    ll_print_nodes(0,999);
     //TODO: 성이 '최' 이거나 가천대 소속일 경우 터미널에 정보 출력하기.
 }
 
