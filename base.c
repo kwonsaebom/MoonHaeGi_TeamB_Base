@@ -13,7 +13,7 @@ struct PERSON // PERSON 구조체. 4개의 문자열, 3개의 정수.
 };
 
 PERSON people_array[50] = {0}; // PERSON 구조체 배열.
-PERSON * people_linked_list = NULL; // PERSON 구조체 linked list. 
+PERSON * people_linked_list = NULL; // PERSON 구조체 linked list. main 함수에서 HEAD 노드 추가 
 FILE * file; // 파일 디스크립터.
 void q1(), q2(), q3(), q4(), q5(), q6(); // 1법부터 6번까지의 문제를 해결할 코드를 다음과 같은 함수의 형태로 적으면 됩니다.
 
@@ -21,9 +21,17 @@ void q1(), q2(), q3(), q4(), q5(), q6(); // 1법부터 6번까지의 문제를 �
 ////////////////////////////
 ////////////////////////////
 
+PERSON * ll_create_node()
+{
+   PERSON * node = (PERSON *) malloc(sizeof(PERSON));
+   node->next = NULL;
+   return node;
+}
+
 int main(void)
 {
     people_linked_list = ll_create_node(); //HEAD 노드 생성.
+    strcpy(people_linked_list->name, "HEAD"); //HEAD 노드의 name은 HEAD.
 
     q1();
     /*q2();
@@ -33,111 +41,81 @@ int main(void)
     q6();*/
 }
 
-#define POSITION_LAST 99999 
-#define POSITION_FIRST 0
-
-PERSON * ll_create_node()
-{
-   PERSON * node = (PERSON *) malloc(sizeof(PERSON));
-   node->next = NULL;
-   return node;
-}
-
-PERSON * ll_get_node_at(int position)
-{
-    int out_of_range = 0;
-    PERSON * ptr = people_linked_list;
-
-    for (int i=0; i<position && !out_of_range; i++)
-    {
-        if (ptr != NULL) ptr = ptr->next;
-        else out_of_range = 1;
-    }
-
-    return out_of_range ? NULL : ptr;
-}
-
-void ll_print_nodes(int from, int to)
+void ll_print_nodes(PERSON * head, int from, int to)
 {
     printf("[리스트에서의 인덱스, 번호, 날짜, 지불여부, 이름, 나이, 출신대학, 직업]\n");
-    for (int i=from; i<=to; i++)
+
+    PERSON * ptr = head->next;
+
+    for (int i=0; i<from && ptr; i++) ptr = ptr->next;
+
+    for (int i=from; i<=to && ptr; i++, ptr = ptr->next)
     {
-        PERSON * p = ll_get_node_at(i);
-        if (p == NULL) return;
 
         printf("#%2d: %3d %11s %3d %30s %2d %30s %20s\n", 
-            i, p->index, p->date, p->paid, p->name,
-            p->age, p->univ, p->job);
+            i, ptr->index, ptr->date, ptr->paid, ptr->name,
+            ptr->age, ptr->univ, ptr->job);
     }
+    if (!ptr) printf("인덱스의 범위를 벗어났습니다.\n");
 }
 
-int ll_add_node_at(PERSON p, int position)
+void ll_insert_node(PERSON * head, PERSON p) //번호순 추가
 {
-    PERSON * ptr = people_linked_list;
+    PERSON * prev = head;
+    PERSON * ptr = head->next;
+
+    while (ptr)
+    {
+        prev = ptr;
+
+        if (ptr->index >= p.index) ptr = ptr->next;
+        else break;
+    }
+
     PERSON * newnode = ll_create_node();
-    int index_count = 0;
+
+    prev->next = newnode;
     *newnode = p;
-
-    if (ptr == NULL)
-    {
-        people_linked_list = newnode;
-        *people_linked_list = p;
-    }
-    else
-    {
-        if (position != 0)
-        {
-            while (ptr->next != NULL && index_count != position-1)
-            {
-                ptr = ptr->next;
-                index_count++;
-            }
-
-            newnode->next = ptr->next;
-            ptr->next = newnode;
-        }
-        else
-        {
-            newnode->next = people_linked_list;
-            people_linked_list = newnode;
-        }
-    }
-
-    return position != index_count;
+    newnode->next = ptr;
 
 }
 
-int ll_remove_node_at(int position)
+void ll_add_node(PERSON * head, PERSON p) //마지막에 추가
 {
-    PERSON * ptr = people_linked_list;
-    int index_count = 0;
+    PERSON * prev = head;
+    PERSON * ptr = head->next;
 
-    if (ptr == NULL) return -1;
-    else if (ptr->next == NULL) people_linked_list = NULL;
-    else
+    while (ptr)
     {
-        if (position != 0)
-        {
-            while (ptr->next->next != NULL && index_count != position-1)
-            {
-                ptr = ptr->next;
-                index_count++;
-            }
-
-            PERSON * next = ptr->next;
-            ptr->next = ptr->next->next;
-            free(next); 
-
-        }
-        else
-        {
-            PERSON * next = ptr->next;
-            free(ptr);
-            people_linked_list = next;
-        }
+        prev = ptr;
+        ptr = ptr->next;
     }
 
-    return position != index_count;
+    PERSON * newnode = ll_create_node();
+
+    prev->next = newnode;
+    *newnode = p;
+    newnode->next = ptr;
+
+}
+
+void ll_remove_node(PERSON * head, int index) // 해당 인덱스의 구조체 제거
+{
+    PERSON * prev = head;
+    PERSON * ptr = head->next;
+
+    while (ptr)
+    {
+        if (ptr->index == index) break;
+
+        prev = ptr;
+        ptr = ptr->next;
+    }
+
+    PERSON * nextp = ptr ? ptr->next : NULL;
+    prev->next = nextp;
+    free(ptr);
+
 }
 
 
@@ -194,12 +172,9 @@ void q1()
     ////
 
     //링크드 리스트에 배열의 구조체들을 추가함.
-    for (int i=0; *people_array[i].name; i++) 
-        ll_add_node_at(people_array[i], POSITION_LAST);
+    for (PERSON * p = people_array; *(p->name); p++) 
+        ll_add_node(people_linked_list, *p);
 
-    ll_print_nodes(0,999);
-    ll_remove_node_at(999);
-    ll_print_nodes(0,999);
     //TODO: 성이 '최' 이거나 가천대 소속일 경우 터미널에 정보 출력하기.
 }
 
