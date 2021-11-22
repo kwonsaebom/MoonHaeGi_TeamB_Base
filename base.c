@@ -81,6 +81,7 @@ void ll_add_node(PERSON * head, PERSON p) //마지막에 추가
 
 }
 
+
 int ll_remove_node(PERSON * head, int index) // 해당 인덱스의 구조체 제거, -1 반환시 리스트 비어있는 것임.
 {
     PERSON * prev = head;
@@ -103,7 +104,7 @@ int ll_remove_node(PERSON * head, int index) // 해당 인덱스의 구조체 �
     return 0;
 }
 
-void ll_print_nodes(PERSON * head, int from, int to)
+void ll_print_nodes(PERSON * head, int from, int to) // 링크드 리스트의 모든 노드들의 정보를 출력함.
 {
     printf("[리스트에서의 인덱스, 번호, 날짜, 지불여부, 이름, 나이, 출신대학, 직업]\n");
 
@@ -120,7 +121,12 @@ void ll_print_nodes(PERSON * head, int from, int to)
     }
     if (!ptr) printf("인덱스의 범위를 벗어났습니다.\n");
 }
-
+void ll_sync_with_array(PERSON * head, PERSON array[]) // 링크드 리스트를 초기화하고 배열과 동기화함.
+{
+    for (int index=1; ll_remove_node(head, index) != -1; index++);
+    for (PERSON * p = array; *p->name; p++)
+        ll_add_node(head, *p);
+}
 
 /////////////////////
 /////////////////////
@@ -185,22 +191,21 @@ void q1()
 void q2() 
 {
     //Selection sort로 번호순대로 배열 정렬
-    int min;
-    for (int i=1; *people_array[i+1].name; i++)
+    for (PERSON * p = people_array; *(p+1)->name; p++)
     {
-        min = i-1;
+        PERSON * min = p;
 
-        for (int j=i; *people_array[j+1].name; j++)
-            if (people_array[j].index < people_array[min].index)
-                min = j;
+        for (PERSON * j = p+1; *j->name; j++)
+            if (j->index < min->index) min = j;
 
-        PERSON tmp = people_array[min];
-        people_array[min] = people_array[i-1];
-        people_array[i-1] = tmp;
+        PERSON tmp = *min;
+        *min = *p;
+        *p = tmp;         
     }
 
     //배열에 정렬한 것들을 링크드 리스트에 다시 작성.
-    ll_remove_node(0)
+    ll_sync_with_array(people_linked_list, people_array);
+    int a = 3;
 }
 
 //문제 3번
