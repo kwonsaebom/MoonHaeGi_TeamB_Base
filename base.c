@@ -35,8 +35,8 @@ int main(void)
 
     q1();
     q2();
-    /*q3();
-    q4();
+    q3();
+   /* q4();
     q5();
     q6();*/
 }
@@ -190,17 +190,22 @@ void q1()
 //문제 2번
 void q2() 
 {
-    //Selection sort로 번호순대로 배열 정렬
-    for (PERSON * p = people_array; *(p+1)->name; p++)
+      //Selection sort로 번호순대로 배열 정렬
+    for (PERSON* p = people_array; *(p + 1)->name; p++)
     {
-        PERSON * min = p;
+        PERSON* min = p;
+        
+        for (PERSON* j = p + 1; *j->name; j++)
+            if (j->index < min->index) {
+                min = j;
+            }
 
-        for (PERSON * j = p+1; *j->name; j++)
-            if (j->index < min->index) min = j;
+        
+        printf("%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
 
         PERSON tmp = *min;
         *min = *p;
-        *p = tmp;         
+        *p = tmp;
     }
 
     //배열에 정렬한 것들을 링크드 리스트에 다시 작성.
@@ -209,7 +214,67 @@ void q2()
 }
 
 //문제 3번
-void q3() {}
+void q3()
+{
+    int flag20 = 0;
+    int flag30 = 0;
+    int flag40 = 0;
+    int flag50 = 0;
+    int flag60 = 0;
+    int flag70 = 0;
+
+    file = fopen("P5-1.txt", "w");
+
+    //Selection sort로 번호순대로 배열 정렬
+    for (PERSON* p = people_array; *(p + 1)->name; p++)
+    {
+        PERSON* min = p;
+
+        for (PERSON* j = p + 1; *j->name; j++)
+            if (j->age < min->age) {
+                min = j;
+            }
+
+        if (min->age >= 20 && min->age < 30) {
+            if (flag20 == 0)  fprintf(file, "Age : 20 ~ 29\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag20 = 1;
+            
+        }
+        if (min->age >= 30 && min->age < 40) {
+            if (flag30 == 0)  fprintf(file, "\nAge : 30 ~ 39\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag30 = 1;
+        }
+        if (min->age >= 40 && min->age < 50) {
+            if (flag40 == 0)  fprintf(file, "\nAge : 40 ~ 49\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag40 = 1;
+        }
+        if (min->age >= 50 && min->age < 60) {
+            if (flag50 == 0)  fprintf(file, "\nAge : 50 ~ 59\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag50 = 1;
+        } 
+        if (min->age >= 60 && min->age < 70) {
+            if (flag60 == 0)  fprintf(file, "\nAge : 60 ~ 69\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag60 = 1;
+        }
+        if (min->age >= 70 && min->age < 80) {
+            if (flag70 == 0)  fprintf(file, "\nAge : 70 ~ 79\n");
+            fprintf(file, "%d/%s/%d/%s/%d/%s/%s\n", min->index, min->date, min->paid, min->name, min->age, min->univ, min->job);
+            flag70 = 1;
+        }
+        PERSON tmp = *min;
+        *min = *p;
+        *p = tmp;
+    }
+
+    fclose(file);
+
+
+}
 
 //문제 4번
 void q4() {}
